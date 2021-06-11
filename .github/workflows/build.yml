@@ -1,0 +1,21 @@
+name: Build
+
+on: [pull_request]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: ['ubuntu-latest']
+        pytest-major-version: ['4', '5', '6']
+      fail-fast: true
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Pytest
+        run: pip install pytest==${{ matrix.pytest-major-version }}.*
+
+      - name: Build
+        run: cmake -S example -B build -G "Unix Makefiles"
