@@ -24,3 +24,12 @@ jobs:
       - name: Test
         working-directory: build
         run: ctest
+
+      - name: Archive report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Report-Pytest${{ matrix.pytest-major-version }}
+          path: |
+            build/report/*.xml
+            build/Testing/Temporary/*.log
