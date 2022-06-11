@@ -16,5 +16,13 @@ def pytest_runtest_makereport(item, call):
 
 @pytest.hookimpl(trylast=True)
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int):
+    try:
+        # Before pytest 5 the values were contants
+        from _pytest.main import EXIT_NOTESTSCOLLECTED
+        no_tests_collected = EXIT_NOTESTSCOLLECTED
+    except ImportError:
+        # From pytest 5 on the values are inside an enum
+        from pytest import ExitCode
+        no_tests_collected = ExitCode.NO_TESTS_COLLECTED
     if test_executed and every_test_skipped:
-        session.exitstatus = pytest.ExitCode.NO_TESTS_COLLECTED
+        session.exitstatus = no_tests_collected
