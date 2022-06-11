@@ -37,6 +37,15 @@ pytest_discover_tests(
 
 For more information see the [module](Pytest.cmake) itself, it has inline documentation.
 
+### Skipped tests
+
+During execution tests that are deselected will be marked as skipped, this should only happen
+if the collection arguments were different than execution arguments. Skipped tests can also be
+picked up by ctest but this requires setting the exit code to 5 when no tests were executed,
+something which is not done by `pytest`, see issues [#812](https://github.com/pytest-dev/pytest/issues/812)
+and [#5689](https://github.com/pytest-dev/pytest/issues/5689).
+This can be solved with a few hooks, see [example conftest](example/conftest.py).
+
 ---
 
 ## License

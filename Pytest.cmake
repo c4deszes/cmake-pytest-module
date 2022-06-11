@@ -29,7 +29,13 @@ This module defines functions to help integrate Pytest scripts into CMake.
   The options are:
 
   ``EXTRA_ARGS arg1...``
-    Any extra arguments to pass on the command line to each test case.
+    Any extra arguments to pass on the command line to pytest
+
+  ``COLLECTION_ARGS arg1...``
+    Extra arguments to pass to pytest during test case collection
+
+  ``EXECUTION_ARGS arg1...``
+    Extra arguments to pass to pytest during test case execution
 
   ``WORKING_DIRECTORY dir``
     Specifies the directory in which to run test case collection and test case
@@ -64,7 +70,7 @@ cmake_parse_arguments(
     ""
     ""
     "TEST_PREFIX;TEST_SUFFIX;WORKING_DIRECTORY;XML_OUTPUT_DIR"
-    "EXTRA_ARGS"
+    "EXTRA_ARGS;COLLECTION_ARGS;EXECUTION_ARGS"
     ${ARGN}
   )
 
@@ -74,8 +80,8 @@ cmake_parse_arguments(
   endif()
 
   # https://docs.pytest.org/en/6.2.x/example/pythoncollection.html#finding-out-what-is-collected
-  set(pytest_collection_args --collect-only -q ${_EXTRA_ARGS})
-  set(pytest_execution_args ${_EXTRA_ARGS})
+  set(pytest_collection_args --collect-only -q ${_EXTRA_ARGS} ${_COLLECTION_ARGS})
+  set(pytest_execution_args ${_EXTRA_ARGS} ${_EXECUTION_ARGS})
   set(pytest_base_command ${Python_EXECUTABLE} -m pytest)
 
   execute_process(
@@ -119,6 +125,8 @@ cmake_parse_arguments(
                 ${test_case} ${pytest_execution_args} ${pytest_local_args}
         WORKING_DIRECTORY ${_WORKING_DIRECTORY}
       )
+      # Pytest Exit code 5 means all tests were deselected
+      set_tests_properties("${test_case_name}" PROPERTIES SKIP_RETURN_CODE 5)
     endif()
 
   endforeach()
